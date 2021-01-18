@@ -3,9 +3,9 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.uic.properties import QtGui
 
 
-class VideoElement(QtWidgets.QWidget):
-    def __init__(self, parent=None):
-        super(VideoElement, self).__init__(parent)
+class VideoView(QtWidgets.QWidget):
+    def __init__(self):
+        super(VideoView, self).__init__()
 
         self.mainHorizontalLayout = QtWidgets.QHBoxLayout()
 

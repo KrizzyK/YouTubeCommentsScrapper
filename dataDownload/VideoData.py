@@ -1,9 +1,6 @@
 # pojo class
 
 class VideoData:
-    # not sure if this is necessary yet
-    videoName = ''
-    videoUrl = ''
 
     def __init__(self, videoName: str, videoUrl: str) -> None:
         self.videoName = videoName

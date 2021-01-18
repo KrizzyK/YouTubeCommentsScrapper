@@ -23,7 +23,7 @@
       <height>561</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="mainAppLayout" stretch="0,0">
+    <layout class="QVBoxLayout" name="mainAppLayout" stretch="0,0,0">
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
@@ -31,7 +31,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="searchLayout">
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
@@ -49,20 +49,40 @@
            <height>30</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="plainText">
+          <string/>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="searchForChannelButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Search For Channel</string>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="searchSubLayout">
+         <item>
+          <widget class="QPushButton" name="searchForChannelButton">
+           <property name="text">
+            <string>Search for channel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>Provide Channel Videos Page Url</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Search by Channel Name</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QToolButton" name="settingsButton">
@@ -70,6 +90,54 @@
           <string>Settings</string>
          </property>
         </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="channelInfoLayout">
+       <item>
+        <widget class="QLabel" name="channelIcon">
+         <property name="minimumSize">
+          <size>
+           <width>64</width>
+           <height>64</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>64</width>
+           <height>64</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="channelInfoSubLayout">
+         <item>
+          <widget class="QLabel" name="channelName">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Channel name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="channelSubCount">
+           <property name="text">
+            <string>Channel subsription count</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
