@@ -10,12 +10,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from dataDownload.ChannelData import ChannelData
 from dataDownload.VideoData import VideoData
+from mainGUIapp.appView import Ui_MainWindow
 from mainGUIapp.videoView import VideoView
 
 
-class DownloadAndShowChannelData(QRunnable):
-    def __init__(self, window, channelData, channelUrl):
-        super(DownloadAndShowChannelData, self).__init__()
+class DownloadChannelData(QRunnable):
+    def __init__(self, window: Ui_MainWindow, channelData: ChannelData, channelUrl: str):
+        super(DownloadChannelData, self).__init__()
 
         self.url = channelUrl
         self.window = window
@@ -33,7 +34,7 @@ class DownloadAndShowChannelData(QRunnable):
             os.makedirs(directory)
 
     # assuming the driver opened the yt videos page
-    def getVideosData(self, driver, channelDirectoryPath):
+    def getVideosData(self, driver, channelDirectoryPath: str):
         videoUrls = [
             videoURL.get_attribute("href") + "\n"
             for videoURL in driver.find_elements_by_xpath("//*[@id='video-title']")

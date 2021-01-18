@@ -8,10 +8,8 @@ from PyQt5.QtGui import QPixmap
 
 from dataDownload.ChannelData import ChannelData
 from dataDownload.VideoData import VideoData
-from mainGUIapp.DownloadAndShowChannelData import DownloadAndShowChannelData
+from mainGUIapp.DownloadChannelData import DownloadChannelData
 from mainGUIapp.videoView import VideoView
-# cyclic import???
-# from mainGUIapp.appView2 import Ui_MainWindow
 
 
 class Controller:
@@ -26,7 +24,7 @@ class Controller:
     def searchForChannel(self):
         providedLink = self.window.channelNameInput.toPlainText()
         print(providedLink)
-        downloadTask = DownloadAndShowChannelData(self.window, self.channelData, providedLink)
+        downloadTask = DownloadChannelData(self.window, self.channelData, providedLink)
         downloadTask.signals.result.connect(self.showChannelInfo)
         self.threadPool.start(downloadTask)
 
@@ -47,12 +45,10 @@ class Controller:
             newElement.setTextUp(videoData.videoName)
             newElement.setTextDown(videoData.videoUrl)
             newElement.setVideoThumbnail('icon.png')
-            print("siema")
 
             myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
             # Set size hint
             myQListWidgetItem.setSizeHint(newElement.sizeHint())
             # # Add element to list
-
             self.window.videoElementsList.setItemWidget(myQListWidgetItem, newElement)
             self.window.videoElementsList.addItem(myQListWidgetItem)
