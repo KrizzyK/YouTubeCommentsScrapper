@@ -1,15 +1,10 @@
-import time
-from typing import List
-import asyncio
-
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThreadPool
 from PyQt5.QtGui import QPixmap
 
-from dataDownload.ChannelData import ChannelData
-from dataDownload.VideoData import VideoData
-from mainGUIapp.DownloadChannelData import DownloadChannelData
-from mainGUIapp.videoView import VideoView
+from Models.ChannelData import ChannelData
+from Controller.BackgroundTasks.DownloadChannelData import DownloadChannelData
+from Views.VideoView import VideoView
 
 
 class Controller:

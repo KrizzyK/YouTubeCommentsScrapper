@@ -1,6 +1,6 @@
 from typing import List
 
-from dataDownload.VideoData import VideoData
+from Models.VideoData import VideoData
 
 
 class ChannelData:

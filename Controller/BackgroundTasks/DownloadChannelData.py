@@ -2,15 +2,12 @@ import os
 import time
 
 import wget
-from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRunnable, pyqtSlot, QObject, pyqtSignal
-from PyQt5.QtGui import QPixmap
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 
-from dataDownload.ChannelData import ChannelData
-from dataDownload.VideoData import VideoData
-from mainGUIapp.videoView import VideoView
+from Models.ChannelData import ChannelData
+from Models.VideoData import VideoData
 
 
 class DownloadChannelData(QRunnable):
