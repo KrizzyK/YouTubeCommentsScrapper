@@ -10,14 +10,15 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from dataDownload.ChannelData import ChannelData
 from dataDownload.VideoData import VideoData
-from mainGUIapp.appView import Ui_MainWindow
 from mainGUIapp.videoView import VideoView
 
 
 class DownloadChannelData(QRunnable):
-    def __init__(self, window: Ui_MainWindow, channelData: ChannelData, channelUrl: str):
+    def __init__(self, window, channelData: ChannelData, channelUrl: str):
         super(DownloadChannelData, self).__init__()
 
+
+        self.driver = None
         self.url = channelUrl
         self.window = window
         self.channelData = channelData
@@ -53,36 +54,35 @@ class DownloadChannelData(QRunnable):
 
     def downloadChannelData(self):
         try:
-            driver = self.getWebDriver()
+            self.driver = self.getWebDriver()
             timeout = 15
-            wait = WebDriverWait(driver, timeout)
-            driver.get(self.url)
+            wait = WebDriverWait(self.driver, timeout)
+            self.driver.get(self.url)
             time.sleep(3)
 
-            channelName = driver.find_element_by_xpath("//*[@id='channel-name']/div/div/yt-formatted-string").text
-            subscriberCount = driver.find_element_by_xpath("//*[@id='subscriber-count']").text
-            iconUrl = driver.find_element_by_xpath(
+            channelName = self.driver.find_element_by_xpath("//*[@id='channel-name']/div/div/yt-formatted-string").text
+            subscriberCount = self.driver.find_element_by_xpath("//*[@id='subscriber-count']").text
+            iconUrl = self.driver.find_element_by_xpath(
                 "//*[@id='channel-header-container']/yt-img-shadow/img").get_property(
                 "src")
 
             channelDirectoryPath = "channels/{}".format(channelName.replace(" ", "_"))
             self.createChannelDirectiory(channelDirectoryPath)
 
-            videoDataList = self.getVideosData(driver, channelDirectoryPath)
+            videoDataList = self.getVideosData(self.driver, channelDirectoryPath)
 
             iconPath = channelDirectoryPath + "/channelIcon.jpg"
             if not os.path.exists(iconPath):
                 wget.download(iconUrl, iconPath)
 
             self.channelData = ChannelData(channelName, subscriberCount, iconPath, videoDataList)
-            print(self.channelData)
         except Exception as e:
             print(e)
         else:
             self.signals.result.emit(self.channelData)
         finally:
-            if driver:
-                driver.close()
+            if self.driver:
+                self.driver.close()
 
     @pyqtSlot()
     def run(self):
