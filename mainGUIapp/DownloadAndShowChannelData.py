@@ -2,16 +2,25 @@ import os
 import time
 
 import wget
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QRunnable, pyqtSlot, QObject, pyqtSignal
+from PyQt5.QtGui import QPixmap
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 
 from dataDownload.ChannelData import ChannelData
 from dataDownload.VideoData import VideoData
+from mainGUIapp.videoView import VideoView
 
 
-class DownloadController():
-    def __init__(self):
-        self.driver = self.getWebDriver()
+class DownloadAndShowChannelData(QRunnable):
+    def __init__(self, window, channelData, channelUrl):
+        super(DownloadAndShowChannelData, self).__init__()
+
+        self.url = channelUrl
+        self.window = window
+        self.channelData = channelData
+        self.signals = Signals()
 
 
     def getWebDriver(self):
@@ -41,34 +50,52 @@ class DownloadController():
                          for videoNames, videoUrls in zip(videoNames, videoUrls)]
         return videoDataList
 
-    # assuming the driver opened the yt videos page
-    def downloadChannelData(self, link: str):
+    def downloadChannelData(self):
         try:
+            driver = self.getWebDriver()
             timeout = 15
-            self.wait = WebDriverWait(self.driver, timeout)
-            self.driver.get(link)
+            wait = WebDriverWait(driver, timeout)
+            driver.get(self.url)
             time.sleep(3)
 
-            channelName = self.driver.find_element_by_xpath("//*[@id='channel-name']/div/div/yt-formatted-string").text
-            subscriberCount = self.driver.find_element_by_xpath("//*[@id='subscriber-count']").text
-            iconUrl = self.driver.find_element_by_xpath(
+            channelName = driver.find_element_by_xpath("//*[@id='channel-name']/div/div/yt-formatted-string").text
+            subscriberCount = driver.find_element_by_xpath("//*[@id='subscriber-count']").text
+            iconUrl = driver.find_element_by_xpath(
                 "//*[@id='channel-header-container']/yt-img-shadow/img").get_property(
                 "src")
 
             channelDirectoryPath = "channels/{}".format(channelName.replace(" ", "_"))
             self.createChannelDirectiory(channelDirectoryPath)
 
-            videoDataList = self.getVideosData(self.driver, channelDirectoryPath)
+            videoDataList = self.getVideosData(driver, channelDirectoryPath)
 
             iconPath = channelDirectoryPath + "/channelIcon.jpg"
             if not os.path.exists(iconPath):
                 wget.download(iconUrl, iconPath)
 
-            return ChannelData(channelName, subscriberCount, iconPath, videoDataList)
-
+            self.channelData = ChannelData(channelName, subscriberCount, iconPath, videoDataList)
+            print(self.channelData)
         except Exception as e:
             print(e)
+        else:
+            self.signals.result.emit(self.channelData)
         finally:
-            if self.driver:
-                self.driver.close()
+            if driver:
+                driver.close()
 
+    @pyqtSlot()
+    def run(self):
+        print("Download start")
+        self.downloadChannelData()
+        print("Download complete")
+
+
+class Signals(QObject):
+    '''
+    Used signals are:
+    result - object data returned from processing, anything
+    progress - int indicating % progress
+    src: https://www.learnpyqt.com/tutorials/multithreading-pyqt-applications-qthreadpool/
+    '''
+    result = pyqtSignal(ChannelData)
+    progress = pyqtSignal(int)
