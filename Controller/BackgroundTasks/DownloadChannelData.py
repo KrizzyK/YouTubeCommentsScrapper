@@ -4,6 +4,7 @@ import time
 import wget
 from PyQt5.QtCore import QRunnable, pyqtSlot, QObject, pyqtSignal
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.wait import WebDriverWait
 
 from Models.ChannelData import ChannelData

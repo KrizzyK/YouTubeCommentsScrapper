@@ -5,13 +5,14 @@ from selenium import webdriver
 from selenium.common import exceptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
 
-class DownloadVideoComments(QRunnable, videoUrl):
-    def __init__(self):
+class DownloadVideoComments(QRunnable):
+    def __init__(self, videoUrl):
         super(DownloadVideoComments, self).__init__()
 
         self.driver = None
@@ -63,7 +64,7 @@ class DownloadVideoComments(QRunnable, videoUrl):
     def getComments(self):
         self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#content")))
         comments_list = [comment_element.text
-                         for comment_element in driver.find_elements_by_xpath("//*[@id='content-text']")]
+                         for comment_element in self.driver.find_elements_by_xpath("//*[@id='content-text']")]
 
         return comments_list
 

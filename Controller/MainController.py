@@ -4,6 +4,7 @@ from PyQt5.QtGui import QPixmap
 
 from Models.ChannelData import ChannelData
 from Controller.BackgroundTasks.DownloadChannelData import DownloadChannelData
+from Views.VideoElementView import VideoElementView
 from Views.VideoView import VideoView
 
 
@@ -36,10 +37,11 @@ class Controller:
         self.window.channelSubCount.setText(self.channelData.subsCount)
 
         for videoData in self.channelData.videosData:
-            newElement = VideoView()
-            newElement.setTextUp(videoData.videoName)
-            newElement.setTextDown(videoData.videoUrl)
-            newElement.setVideoThumbnail('icon.png')
+            newElement = VideoElementView()
+            newElement.setVideoName(videoData.videoName)
+            newElement.setCommentsCount("...")
+            newElement.setlikeDislikeRatio("...")
+            newElement.setCommentsPath("...")
 
             myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
             # Set size hint
