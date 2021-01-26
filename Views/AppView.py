@@ -9,14 +9,16 @@
 
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import QWidget
 from Controller.MainController import Controller
+import qtmodern.styles
+import qtmodern.windows
 from Views.VideoView import VideoView
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QWidget):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("YouTubeScrapper")
         MainWindow.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -107,31 +109,16 @@ class Ui_MainWindow(object):
         self.channelSubCount.setText(_translate("MainWindow", "Channel subsription count"))
 
 
-    def addRandomDataToList(self):
-        for index, name, icon in [
-            ('Film1', 'URL filmu1', 'icon.png'),
-            ('Film2', 'URL filmu2', 'icon.png'),
-            ('Film3', 'URL filmu3', 'icon.png')]:
-            newElement = VideoView()
-            newElement.setTextUp(index)
-            newElement.setTextDown(name)
-            newElement.setVideoThumbnail(icon)
-
-            myQListWidgetItem = QtWidgets.QListWidgetItem(self.videoElementsList)
-            # Set size hint
-            myQListWidgetItem.setSizeHint(newElement.sizeHint())
-            # Add element to list
-            self.videoElementsList.setItemWidget(myQListWidgetItem, newElement)
-            self.videoElementsList.addItem(myQListWidgetItem)
-
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
 
-    MainWindow.show()
+    qtmodern.styles.dark(app)
+    mw = qtmodern.windows.ModernWindow(MainWindow)
+    mw.show()
+
     controller = Controller(ui)
     sys.exit(app.exec_())
 

@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, pyqtSlot
@@ -10,16 +11,26 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
+from Models.VideoData import VideoData
+
 
 class DownloadVideoComments(QRunnable):
-    def __init__(self, videoUrl):
+    def __init__(self, videoName, videoUrl, commentsPath, videoElementView):
         super(DownloadVideoComments, self).__init__()
+
 
         self.driver = None
         self.wait = None
-        self.videoUrl = videoUrl
-        self.comments = []
         self.signals = Signals()
+
+        self.videoName = videoName
+        self.videoUrl = videoUrl
+        self.videoView = videoElementView
+        self.commentsPath = commentsPath
+        self.likeDislikeRatio = "0"
+        self.commentsCount = "0"
+        self.comments = []
+        self.videoData = None
 
     def getWebDriver(self):
         firefox_options = webdriver.FirefoxOptions()
@@ -68,21 +79,29 @@ class DownloadVideoComments(QRunnable):
 
         return comments_list
 
+    def saveComments(self, comments):
+        if not os.path.isdir(self.commentsPath):
+            os.makedirs(self.commentsPath)
+
+        with open(self.commentsPath +"/"+ self.videoName.replace(" ", "_") + ".txt", 'w', encoding="utf-8") as f:
+            for item in comments:
+                f.write("%s\n" % item)
+
     def downloadComments(self):
         try:
             self.driver = self.getWebDriver()
             timeout = 15
             self.wait = WebDriverWait(self.driver, timeout)
-            # https://www.youtube.com/watch?v=xgfa5UlZAL8 a lot of comme
-            # https://www.youtube.com/watch?v=Qj6xHRYFKek # ~ 30 comments ?
             self.driver.get(self.videoUrl)
-            self.scrollDown(True)
+            self.scrollDown(False,3)
             self.comments = self.getComments()
-            print(self.comments)
+            self.saveComments(self.comments)
+            self.videoData = VideoData(self.videoName, self.videoUrl,self.commentsPath,
+                                       self.videoView, self.comments, self.likeDislikeRatio, self.commentsCount)
         except Exception as e:
             print(e)
         else:
-            self.signals.result.emit(self.comments)
+            self.signals.result.emit(self.videoData)
         finally:
             if self.driver:
                 self.driver.close()
@@ -101,5 +120,5 @@ class Signals(QObject):
     progress - int indicating % progress
     src: https://www.learnpyqt.com/tutorials/multithreading-pyqt-applications-qthreadpool/
     '''
-    result = pyqtSignal(List[str])
+    result = pyqtSignal(VideoData)
     progress = pyqtSignal(int)
