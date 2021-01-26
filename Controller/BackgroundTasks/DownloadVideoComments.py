@@ -31,7 +31,7 @@ class DownloadVideoComments(QRunnable):
         self.videoData = None
 
         self.allTheWayDown = True
-        self.howManyScrolls = 5
+        self.howManyScrolls = 2
         self.timeBetweenScrolls = 3
 
     def getWebDriver(self):
@@ -102,6 +102,7 @@ class DownloadVideoComments(QRunnable):
                                        self.videoView, self.comments, self.commentsCount)
         except Exception as e:
             print(e)
+            self.signals.result.emit(None)
         else:
             self.signals.result.emit(self.videoData)
         finally:

@@ -8,20 +8,19 @@ from Controller.BackgroundTasks.DownloadVideoComments import DownloadVideoCommen
 from Models.ChannelData import ChannelData
 from Controller.BackgroundTasks.DownloadChannelData import DownloadChannelData
 from Views.VideoElementView import VideoElementView
-from Views.VideoView import VideoView
 
 
 class Controller:
     def __init__(self, window):
         self.window = window
-        self.channelData = ChannelData('','','',[])
+        self.channelData = ChannelData('', '', '', [])
         self.threadPool = QThreadPool()
+        self.wordsRatingDict = None
+        window.searchForChannelButton.clicked.connect(lambda: self.downloadChannelInformation())
 
-        window.searchForChannelButton.clicked.connect(lambda: self.searchForChannel())
-
-    def searchForChannel(self):
+    def downloadChannelInformation(self):
         providedLink = self.window.channelNameInput.toPlainText()
-        downloadTask = DownloadChannelData(self.window, self.channelData, providedLink)
+        downloadTask = DownloadChannelData(self.window, providedLink)
         downloadTask.signals.result.connect(self.showChannelInfo)
         self.threadPool.start(downloadTask)
 
@@ -31,10 +30,35 @@ class Controller:
         downloadTask.signals.result.connect(self.analyzeVideo)
         self.threadPool.start(downloadTask)
 
-    def analyzeVideo(self, videoData):
-        videoData.videoView.setCommentsCount(videoData.commentsCount)
-        pass
 
+    def getDictOfWordsRating(self):
+        # there was "lambda (k,v): (k,int(v)) "
+        # lambda (x, y): x + y will be translated into: lambda x_y: x_y[0] + x_y[1]
+        if self.wordsRatingDict is None:
+            self.wordsRatingDict = dict(map(lambda k_v: (k_v[0], int(k_v[1])),
+                                            [line.split('\t') for line in open(
+                                                "../SentimentAnalysis/AFINN-111.txt")]))
+
+    def analyzeVideo(self, videoData):
+        try:
+            self.getDictOfWordsRating()
+            videoData.videoView.setTextBelowTitle(videoData.commentsCount)
+
+            listOfRatings = [sum(map(lambda word: self.wordsRatingDict.get(word, 0), comment.lower().split()))
+                             for comment in videoData.comments]
+            positive = negative = neutral = 0
+            for rating in listOfRatings:
+                if rating == 0: neutral+=1
+                elif rating > 0: positive+=1
+                else: negative+=1
+            videoData.videoView.setAmountOfNegativeComments(negative)
+            videoData.videoView.setAmountOfPositiveComments(positive)
+            videoData.videoView.setAmountOfNeutralComments(neutral)
+            videoData.videoView.setAmountOfDownloadedComments(len(listOfRatings))
+
+
+        except Exception as e:
+            print(e)
 
     def setChannelData(self, channelData: ChannelData):
         self.channelData = channelData
@@ -50,16 +74,14 @@ class Controller:
             for videoData in self.channelData.videosData:
                 newElement = VideoElementView()
                 newElement.setVideoName(videoData.videoName)
-                newElement.setCommentsCount("???")
+                newElement.setTextBelowTitle("???")
 
                 myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
-                # Set size hint
                 myQListWidgetItem.setSizeHint(newElement.sizeHint())
-                # # Add element to list
                 self.window.videoElementsList.setItemWidget(myQListWidgetItem, newElement)
                 self.window.videoElementsList.addItem(myQListWidgetItem)
                 newElement.analyzeButton.clicked.connect(
-                    partial(self.downloadComments,videoData.videoName,
+                    partial(self.downloadComments, videoData.videoName,
                             videoData.videoUrl, videoData.commentsPath, newElement))
                 #  https://stackoverflow.com/questions/6784084/how-to-pass-arguments-to-functions-by-the-click-of-button-in-pyqt/42945033
         except Exception as e:

@@ -14,6 +14,7 @@ class VideoElementView(QWidget):
         self.mainLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
 
+        # left layout
         font = QtGui.QFont()
         font.setPointSize(12)
         self.title = QtWidgets.QLabel(text="Video Title")
@@ -21,19 +22,18 @@ class VideoElementView(QWidget):
         sizePolicy.setHeightForWidth(self.title.sizePolicy().hasHeightForWidth())
         self.title.setSizePolicy(sizePolicy)
 
-        self.analyzeButton = QtWidgets.QPushButton(text="Analyze")
+        self.analyzeButton = QtWidgets.QPushButton(text="Analizuj")
         # self.analyzeButton.setMaximumSize(60, 300);
         sizePolicy.setHeightForWidth(self.analyzeButton.sizePolicy().hasHeightForWidth())
         self.analyzeButton.setSizePolicy(sizePolicy)
 
-        self.commentsCount = QtWidgets.QLabel(text="Amoun Count")
-        sizePolicy.setHeightForWidth(self.commentsCount.sizePolicy().hasHeightForWidth())
-        self.commentsCount.setSizePolicy(sizePolicy)
-
+        self.textBelowTitle = QtWidgets.QLabel(text="---")
+        sizePolicy.setHeightForWidth(self.textBelowTitle.sizePolicy().hasHeightForWidth())
+        self.textBelowTitle.setSizePolicy(sizePolicy)
 
 
         self.leftSubLayout = QtWidgets.QHBoxLayout()
-        self.leftSubLayout.addWidget(self.commentsCount, Qt.AlignLeft)
+        self.leftSubLayout.addWidget(self.textBelowTitle, Qt.AlignLeft)
         self.leftSubLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
 
         self.leftLayout = QtWidgets.QVBoxLayout()
@@ -42,13 +42,36 @@ class VideoElementView(QWidget):
         self.leftLayout.addLayout(self.leftSubLayout, Qt.AlignLeft)
         self.leftLayout.addWidget(self.analyzeButton, Qt.AlignLeft)
 
-
+        # line
         self.line = QtWidgets.QFrame()
         self.line.setFrameShape(QtWidgets.QFrame.VLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         # right layout
+        self.amountOfDownloadedComments = QtWidgets.QLabel(text="Pobrane komentarze: ")
+        sizePolicy.setHeightForWidth(self.amountOfDownloadedComments.sizePolicy().hasHeightForWidth())
+        self.amountOfDownloadedComments.setSizePolicy(sizePolicy)
+
+        self.amountOfNeutralComments = QtWidgets.QLabel(text="Neutralne komentarze: ")
+        sizePolicy.setHeightForWidth(self.amountOfNeutralComments.sizePolicy().hasHeightForWidth())
+        self.amountOfNeutralComments.setSizePolicy(sizePolicy)
+
+        self.amountOfPositiveComments = QtWidgets.QLabel(text="Pozytywne komentarze: ")
+        sizePolicy.setHeightForWidth(self.amountOfPositiveComments.sizePolicy().hasHeightForWidth())
+        self.amountOfPositiveComments.setSizePolicy(sizePolicy)
+
+        self.amountOfNegativeComments = QtWidgets.QLabel(text="Negatywne komentarze: ")
+        sizePolicy.setHeightForWidth(self.amountOfNegativeComments.sizePolicy().hasHeightForWidth())
+        self.amountOfNegativeComments.setSizePolicy(sizePolicy)
+
+
         self.rightLayout = QtWidgets.QVBoxLayout()
+        self.rightLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
+        self.rightLayout.addWidget(self.amountOfDownloadedComments, Qt.AlignLeft)
+        self.rightLayout.addWidget(self.amountOfNeutralComments, Qt.AlignLeft)
+        self.rightLayout.addWidget(self.amountOfPositiveComments, Qt.AlignLeft)
+        self.rightLayout.addWidget(self.amountOfNegativeComments, Qt.AlignLeft)
+
 
         self.mainLayout.addLayout(self.leftLayout, Qt.AlignLeft)
         self.mainLayout.addWidget(self.line, Qt.AlignLeft)
@@ -63,8 +86,17 @@ class VideoElementView(QWidget):
 
             self.title.setText(text.ljust(25, ' '))
 
-    def setCommentsCount(self, text):
-        self.commentsCount.setText(text)
+    def setTextBelowTitle(self, text):
+        self.textBelowTitle.setText(text)
 
-    def setLikeDislikeRatio(self, text):
-        self.likeDislikeRatio.setText(text)
+    def setAmountOfDownloadedComments(self, text):
+        self.amountOfDownloadedComments.setText("Pobrane komentarze: " +str(text))
+
+    def setAmountOfNeutralComments(self, text):
+        self.amountOfNeutralComments.setText("Neutralne komentarze: " + str(text))
+
+    def setAmountOfNegativeComments(self, text):
+        self.amountOfNegativeComments.setText("Negatywne komentarze: " + str(text))
+
+    def setAmountOfPositiveComments(self, text):
+        self.amountOfPositiveComments.setText("Pozytywne komentarze: " + str(text))
