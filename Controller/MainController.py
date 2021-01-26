@@ -15,7 +15,6 @@ class Controller:
     def __init__(self, window):
         self.window = window
         self.channelData = ChannelData('','','',[])
-        # init everything
         self.threadPool = QThreadPool()
 
         window.searchForChannelButton.clicked.connect(lambda: self.searchForChannel())

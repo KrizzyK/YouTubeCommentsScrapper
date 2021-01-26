@@ -4,8 +4,11 @@ import time
 import wget
 from PyQt5.QtCore import QRunnable, pyqtSlot, QObject, pyqtSignal
 from selenium import webdriver
+from selenium.common import exceptions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
-
+from selenium.webdriver.support import expected_conditions as EC
 from Models.ChannelData import ChannelData
 from Models.VideoData import VideoData
 
@@ -16,10 +19,15 @@ class DownloadChannelData(QRunnable):
 
 
         self.driver = None
+        self.wait = None
         self.url = channelUrl
         self.window = window
         self.channelData = channelData
         self.signals = Signals()
+
+        self.allTheWayDown = False
+        self.howManyScrolls = 5
+        self.timeBetweenScrolls = 3
 
 
     def getWebDriver(self):
@@ -30,6 +38,39 @@ class DownloadChannelData(QRunnable):
     def createChannelDirectiory(self, directory):
         if not os.path.isdir(directory):
             os.makedirs(directory)
+
+    def scrollDown(self, ):
+        try:
+            if self.allTheWayDown:
+                time.sleep(6)
+
+                get_scroll_height_command = (
+                    "return (document.documentElement || document.body).scrollHeight;"
+                )
+                scroll_to_command = "scrollTo(0, {});"
+
+                # Set y origin and grab the initial scroll height
+                y_position = 0
+                scroll_height = self.driver.execute_script(get_scroll_height_command)
+
+                print("Opened url, scrolling to bottom of page...")
+                # While the scrollbar can still scroll further down, keep scrolling
+                # and asking for the scroll height to check again
+                while y_position != scroll_height:
+                    y_position = scroll_height
+                    self.driver.execute_script(scroll_to_command.format(scroll_height))
+
+                    # Page needs to load yet again otherwise the scroll height matches the y position
+                    # and it breaks out of the loop
+                    time.sleep(self.timeBetweenScrolls)
+                    scroll_height = self.driver.execute_script(get_scroll_height_command)
+            else:
+                for _ in range(self.howManyScrolls):
+                    self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
+                    time.sleep(self.timeBetweenScrolls)
+        except exceptions.NoSuchElementException:
+            print("Error: Element title or comment section not found! ")
+            return
 
     # assuming the driver opened the yt videos page
     def getVideosData(self, driver, channelDirectoryPath: str):
@@ -54,9 +95,9 @@ class DownloadChannelData(QRunnable):
         try:
             self.driver = self.getWebDriver()
             timeout = 15
-            wait = WebDriverWait(self.driver, timeout)
+            self.wait = WebDriverWait(self.driver, timeout)
             self.driver.get(self.url)
-            time.sleep(3)
+            time.sleep(self.timeBetweenScrolls)
 
             channelName = self.driver.find_element_by_xpath("//*[@id='channel-name']/div/div/yt-formatted-string").text
             subscriberCount = self.driver.find_element_by_xpath("//*[@id='subscriber-count']").text
@@ -67,6 +108,7 @@ class DownloadChannelData(QRunnable):
             channelDirectoryPath = "channels/{}".format(channelName.replace(" ", "_"))
             self.createChannelDirectiory(channelDirectoryPath)
 
+            self.scrollDown()
             videoDataList = self.getVideosData(self.driver, channelDirectoryPath)
 
             iconPath = channelDirectoryPath + "/channelIcon.jpg"

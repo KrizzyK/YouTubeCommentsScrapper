@@ -6,7 +6,6 @@ from selenium import webdriver
 from selenium.common import exceptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -31,45 +30,49 @@ class DownloadVideoComments(QRunnable):
         self.comments = []
         self.videoData = None
 
+        self.allTheWayDown = True
+        self.howManyScrolls = 5
+        self.timeBetweenScrolls = 3
+
     def getWebDriver(self):
         firefox_options = webdriver.FirefoxOptions()
-        firefox_options.add_argument("--headless")
+        # firefox_options.add_argument("--headless")
         return webdriver.Firefox(options=firefox_options)
 
-    def scrollDown(self, allTheWayDown: bool = False, howManyScrolls: int = 20) -> None:
+    def scrollDown(self) -> None:
         try:
-            comment_section = self.driver.find_element_by_xpath('//*[@id="comments"]')
-            time.sleep(6)
-            self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
+            if self.allTheWayDown:
+                comment_section = self.driver.find_element_by_xpath('//*[@id="comments"]')
+                time.sleep(6)
+                self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
+
+                get_scroll_height_command = (
+                    "return (document.documentElement || document.body).scrollHeight;"
+                )
+                scroll_to_command = "scrollTo(0, {});"
+
+                # Set y origin and grab the initial scroll height
+                y_position = 0
+                scroll_height = self.driver.execute_script(get_scroll_height_command)
+
+                print("Opened url, scrolling to bottom of page...")
+                # While the scrollbar can still scroll further down, keep scrolling
+                # and asking for the scroll height to check again
+                while y_position != scroll_height:
+                    y_position = scroll_height
+                    self.driver.execute_script(scroll_to_command.format(scroll_height))
+
+                    # Page needs to load yet again otherwise the scroll height matches the y position
+                    # and it breaks out of the loop
+                    time.sleep(self.timeBetweenScrolls)
+                    scroll_height = self.driver.execute_script(get_scroll_height_command)
+            else:
+                for _ in range(self.howManyScrolls):
+                    self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
+                    time.sleep(self.timeBetweenScrolls)
         except exceptions.NoSuchElementException:
             print("Error: Element title or comment section not found! ")
             return
-
-        if allTheWayDown:
-            get_scroll_height_command = (
-                "return (document.documentElement || document.body).scrollHeight;"
-            )
-            scroll_to_command = "scrollTo(0, {});"
-
-            # Set y origin and grab the initial scroll height
-            y_position = 0
-            scroll_height = self.driver.execute_script(get_scroll_height_command)
-
-            print("Opened url, scrolling to bottom of page...")
-            # While the scrollbar can still scroll further down, keep scrolling
-            # and asking for the scroll height to check again
-            while y_position != scroll_height:
-                y_position = scroll_height
-                self.driver.execute_script(scroll_to_command.format(scroll_height))
-
-                # Page needs to load yet again otherwise the scroll height matches the y position
-                # and it breaks out of the loop
-                time.sleep(2)
-                scroll_height = self.driver.execute_script(get_scroll_height_command)
-        else:
-            for _ in range(howManyScrolls):
-                self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
-                time.sleep(2)
 
     def getComments(self):
         self.commentsCount = self.driver.find_element_by_xpath\
@@ -92,7 +95,7 @@ class DownloadVideoComments(QRunnable):
             timeout = 15
             self.wait = WebDriverWait(self.driver, timeout)
             self.driver.get(self.videoUrl)
-            self.scrollDown(False,3)
+            self.scrollDown()
             self.getComments()
             self.saveComments(self.comments)
             self.videoData = VideoData(self.videoName, self.videoUrl,self.commentsPath,
