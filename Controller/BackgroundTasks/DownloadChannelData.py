@@ -4,7 +4,6 @@ import time
 import wget
 from PyQt5.QtCore import QRunnable, pyqtSlot, QObject, pyqtSignal
 from selenium import webdriver
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.support.wait import WebDriverWait
 
 from Models.ChannelData import ChannelData
@@ -47,7 +46,7 @@ class DownloadChannelData(QRunnable):
             file.writelines(videoUrls)
 
         commentsPath = channelDirectoryPath + "/comments"
-        videoDataList = [VideoData(videoNames, videoUrls, commentsPath, None, None, 0, 0)
+        videoDataList = [VideoData(videoNames, videoUrls, commentsPath, None, None, 0)
                          for videoNames, videoUrls in zip(videoNames, videoUrls)]
         return videoDataList
 

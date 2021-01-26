@@ -100,7 +100,7 @@ class Ui_MainWindow(QWidget):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "YouTubeCommentsScrapper"))
         self.searchForChannelButton.setText(_translate("MainWindow", "Search for channel"))
         self.comboBox.setItemText(0, _translate("MainWindow", "Provide Channel Videos Page Url"))
         self.comboBox.setItemText(1, _translate("MainWindow", "Search by Channel Name"))

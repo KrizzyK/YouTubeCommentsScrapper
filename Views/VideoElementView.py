@@ -26,17 +26,14 @@ class VideoElementView(QWidget):
         sizePolicy.setHeightForWidth(self.analyzeButton.sizePolicy().hasHeightForWidth())
         self.analyzeButton.setSizePolicy(sizePolicy)
 
-        self.commentsCount = QtWidgets.QLabel(text="CommCount")
+        self.commentsCount = QtWidgets.QLabel(text="Amoun Count")
         sizePolicy.setHeightForWidth(self.commentsCount.sizePolicy().hasHeightForWidth())
         self.commentsCount.setSizePolicy(sizePolicy)
 
-        self.likeDislikeRatio = QtWidgets.QLabel(text="Like/Dislike")
-        sizePolicy.setHeightForWidth(self.likeDislikeRatio.sizePolicy().hasHeightForWidth())
-        self.likeDislikeRatio.setSizePolicy(sizePolicy)
+
 
         self.leftSubLayout = QtWidgets.QHBoxLayout()
         self.leftSubLayout.addWidget(self.commentsCount, Qt.AlignLeft)
-        self.leftSubLayout.addWidget(self.likeDislikeRatio, Qt.AlignLeft)
         self.leftSubLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
 
         self.leftLayout = QtWidgets.QVBoxLayout()

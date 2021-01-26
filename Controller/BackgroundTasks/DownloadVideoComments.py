@@ -27,7 +27,6 @@ class DownloadVideoComments(QRunnable):
         self.videoUrl = videoUrl
         self.videoView = videoElementView
         self.commentsPath = commentsPath
-        self.likeDislikeRatio = "0"
         self.commentsCount = "0"
         self.comments = []
         self.videoData = None
@@ -73,11 +72,11 @@ class DownloadVideoComments(QRunnable):
                 time.sleep(2)
 
     def getComments(self):
+        self.commentsCount = self.driver.find_element_by_xpath\
+        ("/html/body/ytd-app/div/ytd-page-manager/ytd-watch-flexy/div[5]/div[1]/div/ytd-comments/ytd-item-section-renderer/div[1]/ytd-comments-header-renderer/div[1]/h2/yt-formatted-string" ).text
         self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#content")))
-        comments_list = [comment_element.text
+        self.comments = [comment_element.text
                          for comment_element in self.driver.find_elements_by_xpath("//*[@id='content-text']")]
-
-        return comments_list
 
     def saveComments(self, comments):
         if not os.path.isdir(self.commentsPath):
@@ -87,17 +86,17 @@ class DownloadVideoComments(QRunnable):
             for item in comments:
                 f.write("%s\n" % item)
 
-    def downloadComments(self):
+    def downloadVideoData(self):
         try:
             self.driver = self.getWebDriver()
             timeout = 15
             self.wait = WebDriverWait(self.driver, timeout)
             self.driver.get(self.videoUrl)
             self.scrollDown(False,3)
-            self.comments = self.getComments()
+            self.getComments()
             self.saveComments(self.comments)
             self.videoData = VideoData(self.videoName, self.videoUrl,self.commentsPath,
-                                       self.videoView, self.comments, self.likeDislikeRatio, self.commentsCount)
+                                       self.videoView, self.comments, self.commentsCount)
         except Exception as e:
             print(e)
         else:
@@ -109,7 +108,7 @@ class DownloadVideoComments(QRunnable):
     @pyqtSlot()
     def run(self):
         print("Download start")
-        self.downloadComments()
+        self.downloadVideoData()
         print("Download complete")
 
 

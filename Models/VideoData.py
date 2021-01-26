@@ -3,11 +3,10 @@
 class VideoData:
 
     def __init__(self, videoName: str, videoUrl: str,
-                 commentsPath: str, videoView, comments, likeDislikeRatio, commentsCount) -> None:
+                 commentsPath: str, videoView, comments, commentsCount) -> None:
         self.videoName = videoName
         self.videoUrl = videoUrl
         self.commentsPath = commentsPath
-        self.likeDislikeRatio = likeDislikeRatio
         self.commentsCount = commentsCount
         self.comments = comments
         self.videoView = videoView

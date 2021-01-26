@@ -33,7 +33,7 @@ class Controller:
         self.threadPool.start(downloadTask)
 
     def analyzeVideo(self, videoData):
-
+        videoData.videoView.setCommentsCount(videoData.commentsCount)
         pass
 
 
@@ -48,12 +48,10 @@ class Controller:
             self.window.channelIcon.setPixmap(pixmap)
             self.window.channelName.setText(self.channelData.channelName)
             self.window.channelSubCount.setText(self.channelData.subsCount)
-            print(self.channelData.__str__())
             for videoData in self.channelData.videosData:
                 newElement = VideoElementView()
                 newElement.setVideoName(videoData.videoName)
-                # newElement.setCommentsCount(videoData.commentsCount)
-                # newElement.setlikeDislikeRatio(videoData.likeDislikeRatio)
+                newElement.setCommentsCount("???")
 
                 myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
                 # Set size hint
