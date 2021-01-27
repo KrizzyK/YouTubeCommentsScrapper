@@ -40,7 +40,7 @@ class Ui_MainWindow(QWidget):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.channelNameInput.setFont(font)
-        self.channelNameInput.setPlainText("https://www.youtube.com/c/bmpromotion/videos")
+        self.channelNameInput.setPlainText("https://www.youtube.com/channel/UC2sloW3tudsSaEpxiqd9hTQ/videos")
         self.channelNameInput.setObjectName("channelNameInput")
         self.searchLayout.addWidget(self.channelNameInput)
 
