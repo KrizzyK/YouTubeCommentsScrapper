@@ -14,10 +14,8 @@ from Models.VideoData import VideoData
 
 
 class DownloadVideoComments(QRunnable):
-    def __init__(self, videoName, videoUrl, commentsPath, videoElementView):
+    def __init__(self, videoName, videoUrl, commentsPath, videoElementView, settings):
         super(DownloadVideoComments, self).__init__()
-
-
         self.driver = None
         self.wait = None
         self.signals = Signals()
@@ -30,9 +28,9 @@ class DownloadVideoComments(QRunnable):
         self.comments = []
         self.videoData = None
 
-        self.allTheWayDown = True
-        self.howManyScrolls = 2
-        self.timeBetweenScrolls = 3
+        self.allTheWayDown = settings[2]
+        self.howManyScrolls = settings[0]
+        self.timeBetweenScrolls = settings[1]
 
     def getWebDriver(self):
         firefox_options = webdriver.FirefoxOptions()
@@ -91,6 +89,7 @@ class DownloadVideoComments(QRunnable):
 
     def downloadVideoData(self):
         try:
+            print(self.howManyScrolls, self.timeBetweenScrolls, self.allTheWayDown)
             self.driver = self.getWebDriver()
             timeout = 15
             self.wait = WebDriverWait(self.driver, timeout)
@@ -111,9 +110,9 @@ class DownloadVideoComments(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        print("Download start")
+        print("Download comments from " + self.videoName + " started")
         self.downloadVideoData()
-        print("Download complete")
+        print("Download comments from " + self.videoName + " complete")
 
 
 class Signals(QObject):

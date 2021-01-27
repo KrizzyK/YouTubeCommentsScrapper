@@ -13,7 +13,12 @@ from PyQt5.QtWidgets import QWidget
 from Controller.MainController import Controller
 import qtmodern.styles
 import qtmodern.windows
+
+from Views.SettingsDialog import SettingsDialog
 from Views.VideoView import VideoView
+
+
+
 
 
 class Ui_MainWindow(QWidget):
@@ -45,17 +50,12 @@ class Ui_MainWindow(QWidget):
         self.channelNameInput.setPlainText("https://www.youtube.com/c/bmpromotion/videos")
         self.channelNameInput.setObjectName("channelNameInput")
         self.searchLayout.addWidget(self.channelNameInput)
-        self.searchSubLayout = QtWidgets.QVBoxLayout()
-        self.searchSubLayout.setObjectName("searchSubLayout")
+
         self.searchForChannelButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.searchForChannelButton.setObjectName("searchForChannelButton")
-        self.searchSubLayout.addWidget(self.searchForChannelButton)
-        self.comboBox = QtWidgets.QComboBox(self.verticalLayoutWidget)
-        self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.searchSubLayout.addWidget(self.comboBox)
-        self.searchLayout.addLayout(self.searchSubLayout)
+        self.searchLayout.addWidget(self.searchForChannelButton)
+
+
         self.settingsButton = QtWidgets.QToolButton(self.verticalLayoutWidget)
         self.settingsButton.setObjectName("settingsButton")
         self.searchLayout.addWidget(self.settingsButton)
@@ -101,9 +101,7 @@ class Ui_MainWindow(QWidget):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "YouTubeCommentsScrapper"))
-        self.searchForChannelButton.setText(_translate("MainWindow", "Search for channel"))
-        self.comboBox.setItemText(0, _translate("MainWindow", "Provide Channel Videos Page Url"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "Search by Channel Name"))
+        self.searchForChannelButton.setText(_translate("MainWindow", "Szukaj kanalu"))
         self.settingsButton.setText(_translate("MainWindow", "Settings"))
         self.channelName.setText(_translate("MainWindow", "Channel name"))
         self.channelSubCount.setText(_translate("MainWindow", "Channel subsription count"))

@@ -14,7 +14,7 @@ from Models.VideoData import VideoData
 
 
 class DownloadChannelData(QRunnable):
-    def __init__(self, window, channelUrl: str):
+    def __init__(self, window, channelUrl: str, settings):
         super(DownloadChannelData, self).__init__()
 
 
@@ -25,9 +25,9 @@ class DownloadChannelData(QRunnable):
         self.channelData = None
         self.signals = Signals()
 
-        self.allTheWayDown = False
-        self.howManyScrolls = 1
-        self.timeBetweenScrolls = 3
+        self.allTheWayDown = settings[2]
+        self.howManyScrolls = settings[0]
+        self.timeBetweenScrolls = settings[1]
 
 
     def getWebDriver(self):
@@ -93,6 +93,7 @@ class DownloadChannelData(QRunnable):
 
     def downloadChannelData(self):
         try:
+            print(self.howManyScrolls, self.timeBetweenScrolls, self.allTheWayDown)
             self.driver = self.getWebDriver()
             timeout = 15
             self.wait = WebDriverWait(self.driver, timeout)

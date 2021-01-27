@@ -7,6 +7,7 @@ from PyQt5.QtGui import QPixmap
 from Controller.BackgroundTasks.DownloadVideoComments import DownloadVideoComments
 from Models.ChannelData import ChannelData
 from Controller.BackgroundTasks.DownloadChannelData import DownloadChannelData
+from Views.SettingsDialog import SettingsDialog
 from Views.VideoElementView import VideoElementView
 
 
@@ -16,20 +17,29 @@ class Controller:
         self.channelData = ChannelData('', '', '', [])
         self.threadPool = QThreadPool()
         self.wordsRatingDict = None
+        self.settings = (2, 3, False)
         window.searchForChannelButton.clicked.connect(lambda: self.downloadChannelInformation())
+        window.settingsButton.clicked.connect(lambda: self.showSettingsDialog())
+
+    def showSettingsDialog(self):
+        print("witam")
+        dlg = SettingsDialog()
+        if dlg.exec_():
+            self.settings = dlg.getSettings()
+        else:
+            print("Cancel!")
 
     def downloadChannelInformation(self):
         providedLink = self.window.channelNameInput.toPlainText()
-        downloadTask = DownloadChannelData(self.window, providedLink)
+        downloadTask = DownloadChannelData(self.window, providedLink, self.settings)
         downloadTask.signals.result.connect(self.showChannelInfo)
         self.threadPool.start(downloadTask)
 
     def downloadComments(self, videoName, url, commentsPath, videoView):
         downloadTask = DownloadVideoComments(videoName, url,
-                                             commentsPath, videoView)
+                                             commentsPath, videoView, self.settings)
         downloadTask.signals.result.connect(self.analyzeVideo)
         self.threadPool.start(downloadTask)
-
 
     def getDictOfWordsRating(self):
         # there was "lambda (k,v): (k,int(v)) "
@@ -46,16 +56,16 @@ class Controller:
 
             listOfRatings = [sum(map(lambda word: self.wordsRatingDict.get(word, 0), comment.lower().split()))
                              for comment in videoData.comments]
-            positive = negative = neutral = 0
+            positive = neutral = 0
             for rating in listOfRatings:
-                if rating == 0: neutral+=1
-                elif rating > 0: positive+=1
-                else: negative+=1
-            videoData.videoView.setAmountOfNegativeComments(negative)
+                if rating == 0:
+                    neutral += 1
+                elif rating > 0:
+                    positive += 1
+            videoData.videoView.setAmountOfNegativeComments(len(listOfRatings) - positive)
             videoData.videoView.setAmountOfPositiveComments(positive)
             videoData.videoView.setAmountOfNeutralComments(neutral)
             videoData.videoView.setAmountOfDownloadedComments(len(listOfRatings))
-
 
         except Exception as e:
             print(e)
@@ -88,3 +98,4 @@ class Controller:
             print(e)
         else:
             pass
+
