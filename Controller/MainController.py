@@ -80,10 +80,10 @@ class Controller:
             path = videoData.commentsPath + "/" + videoData.videoName.replace(" ", "_")
             self.createDirectory(path)
             with open(path + "/stats.txt", 'w', encoding="utf-8") as f:
-                f.write("Pobrane komentarze: " + str(len(listOfRatings)))
-                f.write("Neutralne komentarze: " + str(neutral))
-                f.write("Pozytywne komentarze: " + str(positive))
-                f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive))
+                f.write("Pobrane komentarze: " + str(len(listOfRatings)) + "\n")
+                f.write("Neutralne komentarze: " + str(neutral) + "\n")
+                f.write("Pozytywne komentarze: " + str(positive) + "\n")
+                f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive) + "\n")
         except Exception as e:
             print(e)
 
