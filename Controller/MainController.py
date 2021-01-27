@@ -73,7 +73,7 @@ class Controller:
             path = videoData.commentsPath + "/" + videoData.videoName.replace(" ", "_")
             self.createDirectory(path)
             with open(path + "/stats.txt", 'w', encoding="utf-8") as f:
-                f.write(" komentarze: " + str(len(listOfRatings)))
+                f.write("Pobrane komentarze: " + str(len(listOfRatings)))
                 f.write("Neutralne komentarze: " + str(neutral))
                 f.write("Pozytywne komentarze: " + str(positive))
                 f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive) )
@@ -98,8 +98,12 @@ class Controller:
 
                 myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
                 myQListWidgetItem.setSizeHint(newElement.sizeHint())
-                self.window.videoElementsList.setItemWidget(myQListWidgetItem, newElement)
-                self.window.videoElementsList.addItem(myQListWidgetItem)
+
+                list = self.window.videoElementsList
+                print(list.count())
+                list.setItemWidget(myQListWidgetItem, newElement)
+                # self.window.videoElementsList.addItem(myQListWidgetItem)
+                list.insertItem(list.count(), myQListWidgetItem)
                 newElement.analyzeButton.clicked.connect(
                     partial(self.downloadComments, videoData.videoName,
                             videoData.videoUrl, videoData.commentsPath, newElement))

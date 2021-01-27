@@ -14,13 +14,6 @@ from Controller.MainController import Controller
 import qtmodern.styles
 import qtmodern.windows
 
-from Views.SettingsDialog import SettingsDialog
-from Views.VideoView import VideoView
-
-
-
-
-
 class Ui_MainWindow(QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("YouTubeScrapper")
