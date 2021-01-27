@@ -74,13 +74,16 @@ class Controller:
                 elif rating > 0:
                     positive += 1
 
+            # SAVING
             # on gui
             videoData.videoView.setAmountOfNegativeComments(len(listOfRatings) - positive - neutral)
             videoData.videoView.setAmountOfPositiveComments(positive)
             videoData.videoView.setAmountOfNeutralComments(neutral)
             videoData.videoView.setAmountOfDownloadedComments(len(listOfRatings))
             # to file
-            path = videoData.commentsPath + "/" + videoData.videoName.replace(" ", "_")
+            videoName = videoData.videoName.replace(" ", "_")
+            if len(videoName) > 40: videoName = videoName[0: 40]
+            path = videoData.commentsPath + "/" + videoName
             self.createDirectory(path)
             with open(path + "/stats.txt", 'w', encoding="utf-8") as f:
                 f.write("Pobrane komentarze: " + str(len(listOfRatings)) + "\n")

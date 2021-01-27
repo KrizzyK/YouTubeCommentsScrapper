@@ -84,16 +84,20 @@ class DownloadVideoComments(QRunnable):
 
     def saveComments(self, comments):
         try:
-            path = self.commentsPath +"/"+ self.videoName.replace(" ", "_")
-            if not os.path.isdir(path):
-                os.makedirs(path)
+            videoName = self.videoName.replace(" ", "_")
+            if len(videoName) > 40: videoName = videoName[0: 40]
+            path = self.commentsPath + "/" + videoName
+            self.createDirectory(path)
 
             with open(path + "/comments.txt", 'w', encoding="utf-8") as f:
                 for item in comments:
                     f.write("%s\n" % item)
         except Exception as e:
-            print(e)
             pass
+
+    def createDirectory(self, path):
+        if not os.path.isdir(path):
+            os.makedirs(path)
 
     def downloadVideoData(self):
         try:
