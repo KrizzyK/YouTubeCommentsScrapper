@@ -93,7 +93,6 @@ class DownloadChannelData(QRunnable):
 
     def downloadChannelData(self):
         try:
-            print(self.howManyScrolls, self.timeBetweenScrolls, self.allTheWayDown)
             self.driver = self.getWebDriver()
             timeout = 15
             self.wait = WebDriverWait(self.driver, timeout)

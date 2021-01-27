@@ -63,11 +63,10 @@ class SettingsDialog(QDialog):
         self.comboBox.setSizePolicy(sizePolicy)
         self.comboBox.addItem("Przewin komentarze n razy")
         self.comboBox.addItem("Przewin komentarze do konca")
-        # self.comboBox.currentIndexChanged.connect(self.selectionchange)
-        # self.comboBox.activated[str].connect(self.onActivated)
         self.comboBox.currentIndexChanged.connect(self.onIndexChange)
 
         self.layout = QVBoxLayout()
+        self.layout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.layout.addLayout(self.scrollLayout)
         self.layout.addLayout(self.timeBetweenLayout)
         self.layout.addWidget(self.comboBox)

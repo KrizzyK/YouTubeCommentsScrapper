@@ -12,13 +12,14 @@ class VideoElementView(QWidget):
         sizePolicy.setVerticalStretch(0)
 
         self.mainLayout = QtWidgets.QHBoxLayout()
-        self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
 
         # left layout
         font = QtGui.QFont()
         font.setPointSize(12)
         self.title = QtWidgets.QLabel(text="Video Title")
         self.title.setFont(font)
+        self.title.setMinimumSize(300, 0)
         sizePolicy.setHeightForWidth(self.title.sizePolicy().hasHeightForWidth())
         self.title.setSizePolicy(sizePolicy)
 
@@ -72,9 +73,9 @@ class VideoElementView(QWidget):
 
     def setVideoName(self, text: str):
         if len(text) > 25:
-            self.title.setText(text[0:25])
+            self.title.setText(text[0:25] + "...")
         else:
-            self.title.setText(text.ljust(25, ' '))
+            self.title.setText(text.ljust(28, ' ') )
 
 
     def setAmountOfDownloadedComments(self, text):

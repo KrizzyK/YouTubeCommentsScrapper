@@ -97,7 +97,6 @@ class Controller:
                 myQListWidgetItem.setSizeHint(newElement.sizeHint())
 
                 list = self.window.videoElementsList
-                print(list.count())
                 list.setItemWidget(myQListWidgetItem, newElement)
                 list.insertItem(list.count(), myQListWidgetItem)
                 newElement.analyzeButton.clicked.connect(
