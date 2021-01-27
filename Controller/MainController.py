@@ -123,8 +123,6 @@ class Controller:
                 #  https://stackoverflow.com/questions/6784084/how-to-pass-arguments-to-functions-by-the-click-of-button-in-pyqt/42945033
         except Exception as e:
             print(e)
-        else:
-            pass
 
     def createDirectory(self, directory):
         if not os.path.isdir(directory):

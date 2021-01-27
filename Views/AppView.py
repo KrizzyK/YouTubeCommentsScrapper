@@ -23,14 +23,17 @@ class Ui_MainWindow(QWidget):
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 791, 561))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+
         self.mainAppLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.mainAppLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.mainAppLayout.setContentsMargins(0, 0, 0, 0)
         self.mainAppLayout.setObjectName("mainAppLayout")
+
         self.searchLayout = QtWidgets.QHBoxLayout()
         self.searchLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.searchLayout.setObjectName("searchLayout")
         self.channelNameInput = QtWidgets.QPlainTextEdit(self.verticalLayoutWidget)
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
