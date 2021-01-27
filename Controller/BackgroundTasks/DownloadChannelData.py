@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 import wget
@@ -24,9 +25,11 @@ class DownloadChannelData(QRunnable):
         self.channelData = None
         self.signals = Signals()
 
-        self.howManyScrolls = settings[0]
-        self.timeBetweenScrolls = settings[1]
         self.allTheWayDown = settings[2]
+        if self.allTheWayDown: self.howManyScrolls = sys.maxsize
+        else: self.howManyScrolls = settings[0]
+
+        self.timeBetweenScrolls = settings[1]
         self.headless = settings[3]
 
 
@@ -39,44 +42,40 @@ class DownloadChannelData(QRunnable):
     def createChannelDirectiory(self, directory):
         if not os.path.isdir(directory):
             os.makedirs(directory)
-
-    def scrollDown(self):
+    def scrollDown(self) -> None:
         try:
-            if self.allTheWayDown:
-                time.sleep(6)
+            time.sleep(self.timeBetweenScrolls)
+            comment_section = self.driver.find_element_by_xpath('//*[@id="comments"]')
+            self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
 
-                get_scroll_height_command = (
-                    "return (document.documentElement || document.body).scrollHeight;"
-                )
-                scroll_to_command = "scrollTo(0, {});"
+            time.sleep(self.timeBetweenScrolls)
 
-                # Set y origin and grab the initial scroll height
-                y_position = 0
+            get_scroll_height_command = (
+                "return (document.documentElement || document.body).scrollHeight;"
+            )
+            scroll_to_command = "scrollTo(0, {});"
+
+            # Set y origin and grab the initial scroll height
+            y_position = 0
+            scroll_height = self.driver.execute_script(get_scroll_height_command)
+
+            # While the scrollbar can still scroll further down, keep scrolling
+            # and asking for the scroll height to check again
+            currentScroll = 1
+            while y_position != scroll_height and currentScroll != self.howManyScrolls:
+                y_position = scroll_height
+                self.driver.execute_script(scroll_to_command.format(scroll_height))
+
+                progressInt = float(currentScroll / self.howManyScrolls) * 100
+                self.signals.progress.emit(progressInt)
+                currentScroll += 1
+                # Page needs to load yet again otherwise the scroll height matches the y position
+                # and it breaks out of the loop
+                time.sleep(self.timeBetweenScrolls)
                 scroll_height = self.driver.execute_script(get_scroll_height_command)
-
-                print("Opened url, scrolling to bottom of page...")
-                # While the scrollbar can still scroll further down, keep scrolling
-                # and asking for the scroll height to check again
-                while y_position != scroll_height:
-                    y_position = scroll_height
-                    self.driver.execute_script(scroll_to_command.format(scroll_height))
-                    # Page needs to load yet again otherwise the scroll height matches the y position
-                    # and it breaks out of the loop
-                    time.sleep(self.timeBetweenScrolls)
-                    scroll_height = self.driver.execute_script(get_scroll_height_command)
-                    self.signals.progress()
-            else:
-                currentScroll = 1
-                for _ in range(self.howManyScrolls):
-                    self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
-                    progressInt = float(currentScroll / self.howManyScrolls) * 100
-                    self.signals.progress.emit(progressInt)
-                    currentScroll+=1
-                    time.sleep(self.timeBetweenScrolls)
         except Exception as e:
             print(e)
             return
-
     # assuming the driver opened the yt videos page
     def getVideosData(self, driver, channelDirectoryPath: str):
         videoUrls = [

@@ -52,7 +52,6 @@ class Controller:
                                                 "../SentimentAnalysis/AFINN-111.txt")]))
 
     def updateChannelDataProgress(self, progressInt: int):
-        print(progressInt)
         pass
 
     def updateVideoDataProgress(self, videoProgressModel):

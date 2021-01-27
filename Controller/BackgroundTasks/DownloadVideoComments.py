@@ -1,4 +1,5 @@
 import os
+import sys
 from typing import List
 
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, pyqtSlot
@@ -28,9 +29,11 @@ class DownloadVideoComments(QRunnable):
         self.comments = []
         self.videoData = None
 
-        self.howManyScrolls = settings[0]
-        self.timeBetweenScrolls = settings[1]
         self.allTheWayDown = settings[2]
+        if self.allTheWayDown: self.howManyScrolls = sys.maxsize
+        else: self.howManyScrolls = settings[0]
+
+        self.timeBetweenScrolls = settings[1]
         self.headless = settings[3]
 
     def getWebDriver(self):
@@ -45,37 +48,31 @@ class DownloadVideoComments(QRunnable):
             comment_section = self.driver.find_element_by_xpath('//*[@id="comments"]')
             self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
 
-            if self.allTheWayDown:
+            time.sleep(self.timeBetweenScrolls)
+
+            get_scroll_height_command = (
+                "return (document.documentElement || document.body).scrollHeight;"
+            )
+            scroll_to_command = "scrollTo(0, {});"
+
+            # Set y origin and grab the initial scroll height
+            y_position = 0
+            scroll_height = self.driver.execute_script(get_scroll_height_command)
+
+            # While the scrollbar can still scroll further down, keep scrolling
+            # and asking for the scroll height to check again
+            currentScroll = 1
+            while y_position != scroll_height and currentScroll != self.howManyScrolls:
+                y_position = scroll_height
+                self.driver.execute_script(scroll_to_command.format(scroll_height))
+
+                progressInt = float(currentScroll / self.howManyScrolls) * 100
+                self.signals.progress.emit(VideoProgressModel(self.videoView, progressInt))
+                currentScroll += 1
+                # Page needs to load yet again otherwise the scroll height matches the y position
+                # and it breaks out of the loop
                 time.sleep(self.timeBetweenScrolls)
-
-                get_scroll_height_command = (
-                    "return (document.documentElement || document.body).scrollHeight;"
-                )
-                scroll_to_command = "scrollTo(0, {});"
-
-                # Set y origin and grab the initial scroll height
-                y_position = 0
                 scroll_height = self.driver.execute_script(get_scroll_height_command)
-
-                print("Opened url, scrolling to bottom of page...")
-                # While the scrollbar can still scroll further down, keep scrolling
-                # and asking for the scroll height to check again
-                while y_position != scroll_height:
-                    y_position = scroll_height
-                    self.driver.execute_script(scroll_to_command.format(scroll_height))
-
-                    # Page needs to load yet again otherwise the scroll height matches the y position
-                    # and it breaks out of the loop
-                    time.sleep(self.timeBetweenScrolls)
-                    scroll_height = self.driver.execute_script(get_scroll_height_command)
-            else:
-                currentScroll = 1
-                for _ in range(self.howManyScrolls):
-                    self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
-                    progressInt = float(currentScroll / self.howManyScrolls) * 100
-                    self.signals.progress.emit(VideoProgressModel(self.videoView, progressInt))
-                    currentScroll += 1
-                    time.sleep(self.timeBetweenScrolls)
         except exceptions.NoSuchElementException:
             print("Error: Element title or comment section not found! ")
             return
