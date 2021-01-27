@@ -39,7 +39,7 @@ class DownloadChannelData(QRunnable):
         if not os.path.isdir(directory):
             os.makedirs(directory)
 
-    def scrollDown(self, ):
+    def scrollDown(self):
         try:
             if self.allTheWayDown:
                 time.sleep(6)

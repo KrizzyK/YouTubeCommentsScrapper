@@ -55,7 +55,6 @@ class Ui_MainWindow(QWidget):
         self.searchForChannelButton.setObjectName("searchForChannelButton")
         self.searchLayout.addWidget(self.searchForChannelButton)
 
-
         self.settingsButton = QtWidgets.QToolButton(self.verticalLayoutWidget)
         self.settingsButton.setObjectName("settingsButton")
         self.searchLayout.addWidget(self.settingsButton)
@@ -102,9 +101,9 @@ class Ui_MainWindow(QWidget):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "YouTubeCommentsScrapper"))
         self.searchForChannelButton.setText(_translate("MainWindow", "Szukaj kanalu"))
-        self.settingsButton.setText(_translate("MainWindow", "Settings"))
-        self.channelName.setText(_translate("MainWindow", "Channel name"))
-        self.channelSubCount.setText(_translate("MainWindow", "Channel subsription count"))
+        self.settingsButton.setText(_translate("MainWindow", "Ustawienia"))
+        self.channelName.setText(_translate("MainWindow", "Nazwa kanalu"))
+        self.channelSubCount.setText(_translate("MainWindow", "Ilosc subskrypcji"))
 
 
 if __name__ == "__main__":
