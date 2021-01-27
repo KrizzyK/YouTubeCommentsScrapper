@@ -17,14 +17,12 @@ class DownloadChannelData(QRunnable):
     def __init__(self, window, channelUrl: str, settings):
         super(DownloadChannelData, self).__init__()
 
-
         self.driver = None
         self.wait = None
         self.url = channelUrl
         self.window = window
         self.channelData = None
         self.signals = Signals()
-
 
         self.howManyScrolls = settings[0]
         self.timeBetweenScrolls = settings[1]
@@ -62,14 +60,18 @@ class DownloadChannelData(QRunnable):
                 while y_position != scroll_height:
                     y_position = scroll_height
                     self.driver.execute_script(scroll_to_command.format(scroll_height))
-
                     # Page needs to load yet again otherwise the scroll height matches the y position
                     # and it breaks out of the loop
                     time.sleep(self.timeBetweenScrolls)
                     scroll_height = self.driver.execute_script(get_scroll_height_command)
+                    self.signals.progress()
             else:
+                currentScroll = 1
                 for _ in range(self.howManyScrolls):
                     self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
+                    progressInt = float(currentScroll / self.howManyScrolls) * 100
+                    self.signals.progress.emit(progressInt)
+                    currentScroll+=1
                     time.sleep(self.timeBetweenScrolls)
         except exceptions.NoSuchElementException:
             print("Error: Element title or comment section not found! ")
@@ -137,8 +139,8 @@ class DownloadChannelData(QRunnable):
 class Signals(QObject):
     '''
     Used signals are:
-    result - object data returned from processing, anything
-    progress - int indicating % progress
+    result - channelData object
+    progress - float indicating progress
     src: https://www.learnpyqt.com/tutorials/multithreading-pyqt-applications-qthreadpool/
     '''
     result = pyqtSignal(ChannelData)

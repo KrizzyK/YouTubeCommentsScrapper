@@ -31,12 +31,14 @@ class Controller:
         providedLink = self.window.channelNameInput.toPlainText()
         downloadTask = DownloadChannelData(self.window, providedLink, self.settings)
         downloadTask.signals.result.connect(self.showChannelInfo)
+        downloadTask.signals.progress.connect(self.updateChannelDataProgress)
         self.threadPool.start(downloadTask)
 
     def downloadComments(self, videoName, url, commentsPath, videoView):
         downloadTask = DownloadVideoComments(videoName, url,
                                              commentsPath, videoView, self.settings)
         downloadTask.signals.result.connect(self.analyzeVideo)
+        downloadTask.signals.progress.connect(self.updateVideoDataProgress)
         self.threadPool.start(downloadTask)
 
     def getDictOfWordsRating(self):
@@ -47,7 +49,16 @@ class Controller:
                                             [line.split('\t') for line in open(
                                                 "../SentimentAnalysis/AFINN-111.txt")]))
 
+    def updateChannelDataProgress(self, progressInt: int):
+        print(progressInt)
+        pass
+
+    def updateVideoDataProgress(self, videoProgressModel):
+        videoProgressModel.videoView.setProgress(videoProgressModel.progressInt)
+        pass
+
     def analyzeVideo(self, videoData):
+        if videoData is None: return
         try:
             self.getDictOfWordsRating()
 
@@ -72,7 +83,7 @@ class Controller:
                 f.write("Pobrane komentarze: " + str(len(listOfRatings)))
                 f.write("Neutralne komentarze: " + str(neutral))
                 f.write("Pozytywne komentarze: " + str(positive))
-                f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive) )
+                f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive))
         except Exception as e:
             print(e)
 
@@ -80,6 +91,7 @@ class Controller:
         self.channelData = channelData
 
     def showChannelInfo(self, channelData):
+        if channelData is None: return
         try:
             self.channelData = channelData
             pixmap = QPixmap(self.channelData.iconPath)
@@ -97,7 +109,6 @@ class Controller:
                 myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
                 myQListWidgetItem.setSizeHint(newElement.sizeHint())
 
-
                 list.setItemWidget(myQListWidgetItem, newElement)
                 list.insertItem(list.count(), myQListWidgetItem)
                 newElement.analyzeButton.clicked.connect(
@@ -112,4 +123,3 @@ class Controller:
     def createDirectory(self, directory):
         if not os.path.isdir(directory):
             os.makedirs(directory)
-

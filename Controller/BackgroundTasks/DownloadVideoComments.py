@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 from Models.VideoData import VideoData
+from Models.VideoProgressModel import VideoProgressModel
 
 
 class DownloadVideoComments(QRunnable):
@@ -26,7 +27,6 @@ class DownloadVideoComments(QRunnable):
         self.commentsPath = commentsPath
         self.comments = []
         self.videoData = None
-
 
         self.howManyScrolls = settings[0]
         self.timeBetweenScrolls = settings[1]
@@ -69,8 +69,13 @@ class DownloadVideoComments(QRunnable):
                     time.sleep(self.timeBetweenScrolls)
                     scroll_height = self.driver.execute_script(get_scroll_height_command)
             else:
+                currentScroll = 1
                 for _ in range(self.howManyScrolls):
                     self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
+                    progressInt = float(currentScroll / self.howManyScrolls) * 100
+                    self.signals.progress.emit(VideoProgressModel(self.videoView, progressInt))
+                    currentScroll += 1
+
                     time.sleep(self.timeBetweenScrolls)
         except exceptions.NoSuchElementException:
             print("Error: Element title or comment section not found! ")
@@ -122,9 +127,9 @@ class DownloadVideoComments(QRunnable):
 class Signals(QObject):
     '''
     Used signals are:
-    result - object data returned from processing, anything
-    progress - int indicating % progress
+    result - videoData object
+    progress - progress model (includes view and progress float)
     src: https://www.learnpyqt.com/tutorials/multithreading-pyqt-applications-qthreadpool/
     '''
     result = pyqtSignal(VideoData)
-    progress = pyqtSignal(int)
+    progress = pyqtSignal(VideoProgressModel)

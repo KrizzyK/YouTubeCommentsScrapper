@@ -23,6 +23,12 @@ class VideoElementView(QWidget):
         sizePolicy.setHeightForWidth(self.title.sizePolicy().hasHeightForWidth())
         self.title.setSizePolicy(sizePolicy)
 
+        self.downloadProgressBar = QtWidgets.QProgressBar()
+        self.downloadProgressBar.setMaximumSize(300, 50)
+        self.downloadProgressBar.setMinimumSize(250, 50)
+        sizePolicy.setHeightForWidth(self.downloadProgressBar.sizePolicy().hasHeightForWidth())
+        self.downloadProgressBar.setSizePolicy(sizePolicy)
+
         self.analyzeButton = QtWidgets.QPushButton(text="Analizuj")
         # self.analyzeButton.setMaximumSize(60, 300);
         sizePolicy.setHeightForWidth(self.analyzeButton.sizePolicy().hasHeightForWidth())
@@ -32,6 +38,7 @@ class VideoElementView(QWidget):
         self.leftLayout = QtWidgets.QVBoxLayout()
         self.leftLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.leftLayout.addWidget(self.title, Qt.AlignLeft)
+        self.leftLayout.addWidget(self.downloadProgressBar, Qt.AlignLeft)
         self.leftLayout.addWidget(self.analyzeButton, Qt.AlignLeft)
 
         # line
@@ -77,6 +84,8 @@ class VideoElementView(QWidget):
         else:
             self.title.setText(text.ljust(28, ' ') )
 
+    def setProgress(self, progress: int):
+        self.downloadProgressBar.setValue(progress)
 
     def setAmountOfDownloadedComments(self, text):
         self.amountOfDownloadedComments.setText("Pobrane komentarze: " +str(text))
