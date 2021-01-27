@@ -23,7 +23,6 @@ class Controller:
         window.settingsButton.clicked.connect(lambda: self.showSettingsDialog())
 
     def showSettingsDialog(self):
-        print("witam")
         dlg = SettingsDialog()
         if dlg.exec_():
             self.settings = dlg.getSettings()
@@ -53,7 +52,6 @@ class Controller:
     def analyzeVideo(self, videoData):
         try:
             self.getDictOfWordsRating()
-            videoData.videoView.setTextBelowTitle(videoData.commentsCount)
 
             listOfRatings = [sum(map(lambda word: self.wordsRatingDict.get(word, 0), comment.lower().split()))
                              for comment in videoData.comments]
@@ -94,7 +92,6 @@ class Controller:
             for videoData in self.channelData.videosData:
                 newElement = VideoElementView()
                 newElement.setVideoName(videoData.videoName)
-                newElement.setTextBelowTitle("???")
 
                 myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
                 myQListWidgetItem.setSizeHint(newElement.sizeHint())
@@ -102,7 +99,6 @@ class Controller:
                 list = self.window.videoElementsList
                 print(list.count())
                 list.setItemWidget(myQListWidgetItem, newElement)
-                # self.window.videoElementsList.addItem(myQListWidgetItem)
                 list.insertItem(list.count(), myQListWidgetItem)
                 newElement.analyzeButton.clicked.connect(
                     partial(self.downloadComments, videoData.videoName,

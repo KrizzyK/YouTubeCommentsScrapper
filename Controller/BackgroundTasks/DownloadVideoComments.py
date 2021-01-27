@@ -24,7 +24,6 @@ class DownloadVideoComments(QRunnable):
         self.videoUrl = videoUrl
         self.videoView = videoElementView
         self.commentsPath = commentsPath
-        self.commentsCount = "0"
         self.comments = []
         self.videoData = None
 
@@ -99,7 +98,7 @@ class DownloadVideoComments(QRunnable):
             self.getComments()
             self.saveComments(self.comments)
             self.videoData = VideoData(self.videoName, self.videoUrl,self.commentsPath,
-                                       self.videoView, self.comments, self.commentsCount)
+                                       self.videoView, self.comments)
         except Exception as e:
             print(e)
             self.signals.result.emit(None)

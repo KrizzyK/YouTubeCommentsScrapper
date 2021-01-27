@@ -87,7 +87,7 @@ class DownloadChannelData(QRunnable):
             file.writelines(videoUrls)
 
         commentsPath = channelDirectoryPath + "/comments"
-        videoDataList = [VideoData(videoNames, videoUrls, commentsPath, None, None, 0)
+        videoDataList = [VideoData(videoNames, videoUrls, commentsPath, None, None)
                          for videoNames, videoUrls in zip(videoNames, videoUrls)]
         return videoDataList
 

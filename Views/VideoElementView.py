@@ -27,19 +27,10 @@ class VideoElementView(QWidget):
         sizePolicy.setHeightForWidth(self.analyzeButton.sizePolicy().hasHeightForWidth())
         self.analyzeButton.setSizePolicy(sizePolicy)
 
-        self.textBelowTitle = QtWidgets.QLabel(text="---")
-        sizePolicy.setHeightForWidth(self.textBelowTitle.sizePolicy().hasHeightForWidth())
-        self.textBelowTitle.setSizePolicy(sizePolicy)
-
-
-        self.leftSubLayout = QtWidgets.QHBoxLayout()
-        self.leftSubLayout.addWidget(self.textBelowTitle, Qt.AlignLeft)
-        self.leftSubLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
 
         self.leftLayout = QtWidgets.QVBoxLayout()
         self.leftLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.leftLayout.addWidget(self.title, Qt.AlignLeft)
-        self.leftLayout.addLayout(self.leftSubLayout, Qt.AlignLeft)
         self.leftLayout.addWidget(self.analyzeButton, Qt.AlignLeft)
 
         # line
@@ -83,11 +74,8 @@ class VideoElementView(QWidget):
         if len(text) > 25:
             self.title.setText(text[0:25])
         else:
-
             self.title.setText(text.ljust(25, ' '))
 
-    def setTextBelowTitle(self, text):
-        self.textBelowTitle.setText(text)
 
     def setAmountOfDownloadedComments(self, text):
         self.amountOfDownloadedComments.setText("Pobrane komentarze: " +str(text))
