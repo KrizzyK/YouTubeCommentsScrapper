@@ -25,14 +25,17 @@ class DownloadChannelData(QRunnable):
         self.channelData = None
         self.signals = Signals()
 
-        self.allTheWayDown = settings[2]
+
         self.howManyScrolls = settings[0]
         self.timeBetweenScrolls = settings[1]
+        self.allTheWayDown = settings[2]
+        self.headless = settings[3]
 
 
     def getWebDriver(self):
         firefox_options = webdriver.FirefoxOptions()
-        # firefox_options.add_argument("--headless")
+        if self.headless:
+            firefox_options.add_argument("--headless")
         return webdriver.Firefox(options=firefox_options)
 
     def createChannelDirectiory(self, directory):

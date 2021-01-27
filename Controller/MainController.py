@@ -18,7 +18,7 @@ class Controller:
         self.channelData = ChannelData('', '', '', [])
         self.threadPool = QThreadPool()
         self.wordsRatingDict = None
-        self.settings = (2, 3, False)
+        self.settings = (2, 3, False, False)
         window.searchForChannelButton.clicked.connect(lambda: self.downloadChannelInformation())
         window.settingsButton.clicked.connect(lambda: self.showSettingsDialog())
 
