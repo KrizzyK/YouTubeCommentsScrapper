@@ -106,7 +106,7 @@ class DownloadChannelData(QRunnable):
                 "//*[@id='channel-header-container']/yt-img-shadow/img").get_property(
                 "src")
 
-            channelDirectoryPath = "channels/{}".format(channelName.replace(" ", "_"))
+            channelDirectoryPath = "../channels/{}".format(channelName.replace(" ", "_"))
             self.createChannelDirectiory(channelDirectoryPath)
 
             self.scrollDown()

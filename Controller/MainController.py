@@ -1,3 +1,4 @@
+import os
 from functools import partial
 
 from PyQt5 import QtWidgets
@@ -62,11 +63,20 @@ class Controller:
                     neutral += 1
                 elif rating > 0:
                     positive += 1
+
+            # on gui
             videoData.videoView.setAmountOfNegativeComments(len(listOfRatings) - positive)
             videoData.videoView.setAmountOfPositiveComments(positive)
             videoData.videoView.setAmountOfNeutralComments(neutral)
             videoData.videoView.setAmountOfDownloadedComments(len(listOfRatings))
-
+            # to file
+            path = videoData.commentsPath + "/" + videoData.videoName.replace(" ", "_")
+            self.createDirectory(path)
+            with open(path + "/stats.txt", 'w', encoding="utf-8") as f:
+                f.write(" komentarze: " + str(len(listOfRatings)))
+                f.write("Neutralne komentarze: " + str(neutral))
+                f.write("Pozytywne komentarze: " + str(positive))
+                f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive) )
         except Exception as e:
             print(e)
 
@@ -98,4 +108,8 @@ class Controller:
             print(e)
         else:
             pass
+
+    def createDirectory(self, directory):
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
 

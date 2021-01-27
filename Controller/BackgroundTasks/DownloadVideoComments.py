@@ -73,17 +73,18 @@ class DownloadVideoComments(QRunnable):
             return
 
     def getComments(self):
-        self.commentsCount = self.driver.find_element_by_xpath\
-        ("/html/body/ytd-app/div/ytd-page-manager/ytd-watch-flexy/div[5]/div[1]/div/ytd-comments/ytd-item-section-renderer/div[1]/ytd-comments-header-renderer/div[1]/h2/yt-formatted-string" ).text
+        # self.commentsCount = self.driver.find_element_by_xpath\
+        # ("/html/body/ytd-app/div/ytd-page-manager/ytd-watch-flexy/div[5]/div[1]/div/ytd-comments/ytd-item-section-renderer/div[1]/ytd-comments-header-renderer/div[1]/h2/yt-formatted-string" ).text
         self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#content")))
         self.comments = [comment_element.text
                          for comment_element in self.driver.find_elements_by_xpath("//*[@id='content-text']")]
 
     def saveComments(self, comments):
-        if not os.path.isdir(self.commentsPath):
-            os.makedirs(self.commentsPath)
+        path = self.commentsPath +"/"+ self.videoName.replace(" ", "_")
+        if not os.path.isdir(path):
+            os.makedirs(path)
 
-        with open(self.commentsPath +"/"+ self.videoName.replace(" ", "_") + ".txt", 'w', encoding="utf-8") as f:
+        with open(path + "/comments.txt", 'w', encoding="utf-8") as f:
             for item in comments:
                 f.write("%s\n" % item)
 
