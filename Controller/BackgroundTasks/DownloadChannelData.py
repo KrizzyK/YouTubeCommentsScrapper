@@ -26,12 +26,13 @@ class DownloadChannelData(QRunnable):
         self.signals = Signals()
 
         self.allTheWayDown = settings[2]
-        if self.allTheWayDown: self.howManyScrolls = sys.maxsize
-        else: self.howManyScrolls = settings[0]
+        if self.allTheWayDown:
+            self.howManyScrolls = sys.maxsize
+        else:
+            self.howManyScrolls = settings[0]
 
         self.timeBetweenScrolls = settings[1]
         self.headless = settings[3]
-
 
     def getWebDriver(self):
         firefox_options = webdriver.FirefoxOptions()
@@ -39,9 +40,10 @@ class DownloadChannelData(QRunnable):
             firefox_options.add_argument("--headless")
         return webdriver.Firefox(options=firefox_options)
 
-    def createChannelDirectiory(self, directory):
+    def createDirectiory(self, directory):
         if not os.path.isdir(directory):
             os.makedirs(directory)
+
     def scrollDown(self) -> None:
         try:
             time.sleep(self.timeBetweenScrolls)
@@ -76,6 +78,7 @@ class DownloadChannelData(QRunnable):
         except Exception as e:
             print(e)
             return
+
     # assuming the driver opened the yt videos page
     def getVideosData(self, driver, channelDirectoryPath: str):
         videoUrls = [
@@ -110,7 +113,7 @@ class DownloadChannelData(QRunnable):
                 "src")
 
             channelDirectoryPath = "../channels/{}".format(channelName.replace(" ", "_"))
-            self.createChannelDirectiory(channelDirectoryPath)
+            self.createDirectiory(channelDirectoryPath)
 
             self.scrollDown()
             videoDataList = self.getVideosData(self.driver, channelDirectoryPath)
