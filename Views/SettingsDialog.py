@@ -4,13 +4,13 @@ from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout
 
 class SettingsDialog(QDialog):
 
-    def __init__(self):
+    def __init__(self, settings):
         super(SettingsDialog, self).__init__()
 
-        self.howManyScrolls = 2
-        self.timeBetweenScrolls = 3
-        self.toTheEnd = False
-        self.headless = False
+        self.howManyScrolls = settings[0]
+        self.timeBetweenScrolls = settings[1]
+        self.toTheEnd = settings[2]
+        self.headless = settings[3]
 
         self.setWindowTitle("Settings")
 
@@ -38,7 +38,7 @@ class SettingsDialog(QDialog):
         sizePolicy.setHeightForWidth(self.scrollsInput.sizePolicy().hasHeightForWidth())
         self.scrollsInput.setSizePolicy(sizePolicy)
         self.scrollsInput.setMaximumSize(120, 30)
-        self.scrollsInput.setPlainText("2")
+
 
         self.scrollsInput.textChanged.connect(self.scrollsChanged)
 
@@ -49,7 +49,7 @@ class SettingsDialog(QDialog):
         self.timeBetweenScrollsLayout = QtWidgets.QHBoxLayout()
         self.timeBetweenScrollsLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
 
-        self.timeLabel = QtWidgets.QLabel(text="Ilosc scrolli: ")
+        self.timeLabel = QtWidgets.QLabel(text="Czas pomiedzy scrollami: ")
         sizePolicy.setHeightForWidth(self.timeLabel.sizePolicy().hasHeightForWidth())
         self.timeLabel.setSizePolicy(sizePolicy)
 
@@ -57,7 +57,6 @@ class SettingsDialog(QDialog):
         sizePolicy.setHeightForWidth(self.timeBetweenScrollsInput.sizePolicy().hasHeightForWidth())
         self.timeBetweenScrollsInput.setSizePolicy(sizePolicy)
         self.timeBetweenScrollsInput.setMaximumSize(120,30)
-        self.timeBetweenScrollsInput.setPlainText("3")
         self.timeBetweenScrollsInput.textChanged.connect(self.timeBetweenChanged)
 
         self.timeBetweenScrollsLayout.addWidget(self.timeLabel)
@@ -79,6 +78,10 @@ class SettingsDialog(QDialog):
         self.headlessComboBox.addItem("Headless")
         self.headlessComboBox.currentIndexChanged.connect(self.onIndexHeadlessChange)
 
+        self.scrollsInput.setPlainText(str(self.howManyScrolls))
+        self.timeBetweenScrollsInput.setPlainText(str(self.timeBetweenScrolls))
+        self.setCurrentHeadless()
+        self.setCurrentScrollToTheEnd()
 
         self.layout.addLayout(self.scrollLayout)
         self.layout.addLayout(self.timeBetweenScrollsLayout)
@@ -94,6 +97,14 @@ class SettingsDialog(QDialog):
     def onIndexHeadlessChange(self, index):
         if index == 0: self.headless = False
         else: self.headless = True
+
+    def setCurrentHeadless(self):
+        if self.headless: self.headlessComboBox.setCurrentIndex(1)
+        else:  self.headlessComboBox.setCurrentIndex(0)
+
+    def setCurrentScrollToTheEnd(self):
+        if self.toTheEnd: self.scrollToTheEndComboBox.setCurrentIndex(1)
+        else:  self.scrollToTheEndComboBox.setCurrentIndex(0)
 
     def scrollsChanged(self):
         try:

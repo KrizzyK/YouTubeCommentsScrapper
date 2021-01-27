@@ -23,11 +23,9 @@ class Controller:
         window.settingsButton.clicked.connect(lambda: self.showSettingsDialog())
 
     def showSettingsDialog(self):
-        dlg = SettingsDialog()
+        dlg = SettingsDialog(self.settings)
         if dlg.exec_():
             self.settings = dlg.getSettings()
-        else:
-            print("Cancel!")
 
     def downloadChannelInformation(self):
         providedLink = self.window.channelNameInput.toPlainText()
@@ -89,6 +87,9 @@ class Controller:
             self.window.channelIcon.setPixmap(pixmap)
             self.window.channelName.setText(self.channelData.channelName)
             self.window.channelSubCount.setText(self.channelData.subsCount)
+            # clear list
+            list = self.window.videoElementsList
+            list.clear()
             for videoData in self.channelData.videosData:
                 newElement = VideoElementView()
                 newElement.setVideoName(videoData.videoName)
@@ -96,7 +97,7 @@ class Controller:
                 myQListWidgetItem = QtWidgets.QListWidgetItem(self.window.videoElementsList)
                 myQListWidgetItem.setSizeHint(newElement.sizeHint())
 
-                list = self.window.videoElementsList
+
                 list.setItemWidget(myQListWidgetItem, newElement)
                 list.insertItem(list.count(), myQListWidgetItem)
                 newElement.analyzeButton.clicked.connect(
