@@ -28,6 +28,7 @@ class Controller:
             self.settings = dlg.getSettings()
 
     def downloadChannelInformation(self):
+        self.updateChannelDataProgress(0)
         providedLink = self.window.channelNameInput.toPlainText()
         downloadTask = DownloadChannelData(self.window, providedLink, self.settings)
         downloadTask.signals.result.connect(self.showChannelInfo)
@@ -35,6 +36,7 @@ class Controller:
         self.threadPool.start(downloadTask)
 
     def downloadComments(self, videoName, url, commentsPath, videoView):
+        videoView.setProgress(0)
         downloadTask = DownloadVideoComments(videoName, url,
                                              commentsPath, videoView, self.settings)
         downloadTask.signals.result.connect(self.analyzeVideo)
@@ -59,11 +61,13 @@ class Controller:
 
     def analyzeVideo(self, videoData):
         if videoData is None: return
+        videoData.videoView.setProgress(100)
         try:
             self.getDictOfWordsRating()
 
             listOfRatings = [sum(map(lambda word: self.wordsRatingDict.get(word, 0), comment.lower().split()))
                              for comment in videoData.comments]
+            print("List of comment positivity ratings: ", listOfRatings)
             positive = neutral = 0
             for rating in listOfRatings:
                 if rating == 0:
@@ -72,7 +76,7 @@ class Controller:
                     positive += 1
 
             # on gui
-            videoData.videoView.setAmountOfNegativeComments(len(listOfRatings) - positive)
+            videoData.videoView.setAmountOfNegativeComments(len(listOfRatings) - positive - neutral)
             videoData.videoView.setAmountOfPositiveComments(positive)
             videoData.videoView.setAmountOfNeutralComments(neutral)
             videoData.videoView.setAmountOfDownloadedComments(len(listOfRatings))
@@ -83,7 +87,7 @@ class Controller:
                 f.write("Pobrane komentarze: " + str(len(listOfRatings)) + "\n")
                 f.write("Neutralne komentarze: " + str(neutral) + "\n")
                 f.write("Pozytywne komentarze: " + str(positive) + "\n")
-                f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive) + "\n")
+                f.write("Negatywne komentarze: " + str(len(listOfRatings) - positive - neutral) + "\n")
         except Exception as e:
             print(e)
 

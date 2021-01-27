@@ -44,9 +44,9 @@ class DownloadVideoComments(QRunnable):
             time.sleep(self.timeBetweenScrolls)
             comment_section = self.driver.find_element_by_xpath('//*[@id="comments"]')
             self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
+
             if self.allTheWayDown:
                 time.sleep(self.timeBetweenScrolls)
-                self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
 
                 get_scroll_height_command = (
                     "return (document.documentElement || document.body).scrollHeight;"
@@ -75,7 +75,6 @@ class DownloadVideoComments(QRunnable):
                     progressInt = float(currentScroll / self.howManyScrolls) * 100
                     self.signals.progress.emit(VideoProgressModel(self.videoView, progressInt))
                     currentScroll += 1
-
                     time.sleep(self.timeBetweenScrolls)
         except exceptions.NoSuchElementException:
             print("Error: Element title or comment section not found! ")

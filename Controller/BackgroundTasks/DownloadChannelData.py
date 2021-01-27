@@ -73,8 +73,8 @@ class DownloadChannelData(QRunnable):
                     self.signals.progress.emit(progressInt)
                     currentScroll+=1
                     time.sleep(self.timeBetweenScrolls)
-        except exceptions.NoSuchElementException:
-            print("Error: Element title or comment section not found! ")
+        except Exception as e:
+            print(e)
             return
 
     # assuming the driver opened the yt videos page

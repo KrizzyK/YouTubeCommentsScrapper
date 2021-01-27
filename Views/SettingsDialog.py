@@ -66,8 +66,8 @@ class SettingsDialog(QDialog):
         self.scrollToTheEndComboBox = QtWidgets.QComboBox()
         sizePolicy.setHeightForWidth(self.scrollToTheEndComboBox.sizePolicy().hasHeightForWidth())
         self.scrollToTheEndComboBox.setSizePolicy(sizePolicy)
-        self.scrollToTheEndComboBox.addItem("Przewin komentarze n razy")
-        self.scrollToTheEndComboBox.addItem("Przewin komentarze do konca")
+        self.scrollToTheEndComboBox.addItem("Przewin strone n razy")
+        self.scrollToTheEndComboBox.addItem("Przewin strone do konca")
         self.scrollToTheEndComboBox.currentIndexChanged.connect(self.onIndexScrollChange)
 
         # headlessOrNot
