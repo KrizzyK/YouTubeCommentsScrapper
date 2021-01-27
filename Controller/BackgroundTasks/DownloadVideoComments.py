@@ -41,9 +41,11 @@ class DownloadVideoComments(QRunnable):
 
     def scrollDown(self) -> None:
         try:
+            time.sleep(self.timeBetweenScrolls)
+            comment_section = self.driver.find_element_by_xpath('//*[@id="comments"]')
+            self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
             if self.allTheWayDown:
-                comment_section = self.driver.find_element_by_xpath('//*[@id="comments"]')
-                time.sleep(6)
+                time.sleep(self.timeBetweenScrolls)
                 self.driver.execute_script("arguments[0].scrollIntoView();", comment_section)
 
                 get_scroll_height_command = (
